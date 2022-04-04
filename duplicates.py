@@ -9,6 +9,7 @@ import re
 import argparse
 import hashlib
 import sqlite3
+from sys import stderr
 
 
 HASH_BUF_SIZE = 65536
@@ -42,7 +43,7 @@ def open_or_create_db(dbpath=DB_DEFAULT):
     if len(tablenames) == 1 and tablenames[0] != 'paths':
         raise Exception("SQLite db contains foreign tables:", tablenames)
     if len(tablenames) == 0:
-        print("Setting up new database.")
+        print("Setting up new database.", file=stderr)
         DB.execute("PRAGMA case_sensitive_like = true")
         DB.execute(f"CREATE TABLE {TABLENAME}(path TEXT PRIMARY KEY NOT NULL,"
                    f"hash TEXT NOT NULL, lastmod REAL, dir TEXT NOT NULL)")
@@ -115,7 +116,7 @@ def load_ignore(path=IGNORELISTPATH):
     global IGNORELIST
     if not os.path.exists(path):
         return
-    print(f"Loading ignore list from {path}")
+    print(f"Loading ignore list from {path}", file=stderr)
     with open(path, 'r') as f:
         IGNORELIST = [re.compile(line) for line in f.readlines()
                       if len(line.strip()) > 0]
