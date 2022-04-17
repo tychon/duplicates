@@ -199,19 +199,19 @@ def cmd_hash(cmd, directory, force, delete, simulate):
                     fpath, file_hash(fpath), mtime)
             summary[2] += 1
 
-    walk(directory, filecb)
-
-    if delete:
-        for fpath in oldfiles:
-            db_remove_file(fpath)
-
-    db_commit()
-    print(f"{summary[0]} up to date")
-    print(f"{summary[1]} updated")
-    print(f"{summary[2]} new")
-    print(f"{len(oldfiles)} removed")
-    if force:
-        print(f"FORCE: {summary[4]} of updated files had old time stamps.")
+    try:
+        walk(directory, filecb)
+        if delete:
+            for fpath in oldfiles:
+                db_remove_file(fpath)
+    finally:
+        db_commit()
+        print(f"{summary[0]} up to date")
+        print(f"{summary[1]} updated")
+        print(f"{summary[2]} new")
+        print(f"{len(oldfiles)} removed")
+        if force:
+            print(f"FORCE: {summary[4]} of updated files had old time stamps.")
 
 
 def cmd_duplicates(cmd, directory, source, mark, plain):
@@ -268,14 +268,16 @@ def cmd_duplicates(cmd, directory, source, mark, plain):
                 except KeyError:
                     pass
 
-    walk(directory, filecb)
-    db_commit()
-    if not plain:
-        print(f"{summary[0]} files total")
-        print(f"{summary[1]} are have duplicates")
-        if mark:
-            print(f"{summary[2]} could not be renamed because"
-                  " name already existed")
+    try:
+        walk(directory, filecb)
+    finally:
+        db_commit()
+        if not plain:
+            print(f"{summary[0]} files total")
+            print(f"{summary[1]} are have duplicates")
+            if mark:
+                print(f"{summary[2]} could not be renamed because"
+                      " name already existed")
 
 
 if __name__ == '__main__':
