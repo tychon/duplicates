@@ -127,7 +127,9 @@ def is_ignored(fpath):
 
 
 def walk(root, filecb=None, dircb=None):
-    for dirpath, dirnames, filenames in os.walk(root):
+    def handlerror(oserror):
+        raise oserror
+    for dirpath, dirnames, filenames in os.walk(root, onerror=handlerror):
         if dircb is not None and not is_ignored(dirpath):
             dircb(dirpath, dirnames, filenames)
         for fname in filenames:
