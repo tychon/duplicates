@@ -160,6 +160,8 @@ def cmd_hash(cmd, directory, force, delete, simulate):
 
     if delete:
         oldfiles = db_all_subfiles(directory)
+    else:
+        oldfiles = set()
 
     summary = [0, 0, 0, 0, 0]
 
@@ -199,8 +201,9 @@ def cmd_hash(cmd, directory, force, delete, simulate):
 
     walk(directory, filecb)
 
-    for fpath in oldfiles:
-        db_remove_file(fpath)
+    if delete:
+        for fpath in oldfiles:
+            db_remove_file(fpath)
 
     db_commit()
     print(f"{summary[0]} up to date")
