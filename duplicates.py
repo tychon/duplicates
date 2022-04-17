@@ -148,12 +148,12 @@ def path_is_in_root(path):
 
 def normalize_path(path):
     relpath = os.path.relpath(path)
-    return '' if relpath == '.' else relpath
+    return relpath
 
 
 def cmd_hash(cmd, directory, force, delete, simulate):
     if directory is None:
-        directory = ''
+        directory = '.'
     else:
         assert path_is_in_root(directory)
         directory = normalize_path(directory)
